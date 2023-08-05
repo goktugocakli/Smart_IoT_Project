@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <title>Sign Up SmartIoT</title>
+  <style>
+    /* Bu stil kodları, kutuyu ortalamak ve sayfayı tamamen kaplamamak için eklenmiştir. */
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-fluid-6 p-4">
+        <div class="bd-example m-0 border-0">
+          <div class="text-center mb-4">
+            <h3>SmartIoT Kayıt Sayfası</h3>
+          </div>
+          <form id="signUpForm" enctype="application/json">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="ad" name="ad" placeholder="Ad" required>
+              <label for="ad">Ad</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="soyad" name="soyad" placeholder="SoyAd" required>
+              <label for="soyad">Soyad</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="email" class="form-control" id="mail" name="mail" placeholder="E-Posta" required>
+              <label for="mail">E-Posta</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="sifre" name="password" placeholder="Password" required>
+              <label for="password">Password</label>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3 p-3">Kayıt Ol</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let signUpForm = document.getElementById('signUpForm')
+    signUpForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      sendData()
+
+    })
+    function sendData() {
+      const formData = {
+        name: document.getElementById('ad').value,
+        surname: document.getElementById('soyad').value,
+        mail: document.getElementById('mail').value,
+        password: document.getElementById('sifre').value
+      }
+      fetch('/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      }).then(res => res.json())
+        .then(data => {
+          console.log(data)
+        })
+        .catch(error => console.log(error))
+    }
+  </script>
+
+</body>
+
+</html>

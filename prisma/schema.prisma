@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model device {
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar(255)
+  broker_topic String       @db.VarChar(255)
+  device_log   device_log[]
+  users        user[]
+  type         Type
+}
+
+enum Type {
+  LED
+  DHT11
+  RGB
+}
+
+model device_log {
+  id        Int      @id @default(autoincrement())
+  tarih     DateTime @default(now()) @db.Timestamp(0)
+  device    device   @relation(fields: [device_id], references: [id])
+  device_id Int
+  message   String?  @db.VarChar(45)
+
+  @@index([device_id])
+}
+
+model user {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  surname  String   @db.VarChar(255)
+  mail     String   @unique(map: "mail_UNIQUE") @db.VarChar(100)
+  password String   @db.VarChar(255)
+  devices  device[]
+}

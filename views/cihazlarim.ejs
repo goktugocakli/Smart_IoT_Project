@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <title>Cihazlarım</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start m-3">
+            <a class="btn btn-primary" onclick="logout()" role="button">Logout</a>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end m-3">
+            <a class="btn btn-primary" href="/yeniCihaz" role="button">Yeni Cihaz Ekle</a>
+        </div>
+        <div class="row">
+            <div id="userDeviceInfo" class="col-12">
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script id="device-info-template" type="text/x-handlebars-template">
+        {{#if devices.length}}
+
+        {{#each devices}}
+            <div class="card m-3">
+                <div class="row">
+                    <div class="card-body col-8">
+                        <a id="deviceLink" href="/device/{{type}}/{{id}}" style="text-decoration: none;">
+                            <h1>{{name}}</h1>
+                        </a>
+                        <h2>{{type}}</h2>
+                        <h3>{{broker_topic}}</h3>
+                    </div>
+                    <div class="col-3 align-self-center">
+                        <button onclick="deleteCihaz('{{id}}')" type="button" class="btn btn-danger btn-lg">Cihazı Sil</button>
+                    </div>
+
+                </div>
+
+            </div>
+        {{/each}}
+        {{else}}
+            <div class="card m-3">
+                <div class="row">
+                    <div class="card-body col-12">
+                        <h1>Henüz sisteme kayıtlı cihazınız yok.</h1>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </script>
+    <script>
+        const userData = JSON.parse(localStorage.getItem('user'))
+        console.log(userData)
+        const devices = userData['devices']
+        console.log(devices)
+
+        const deviceInfoTemplate = document.getElementById('device-info-template').innerHTML;
+        const deviceInfoCompiledTemplate = Handlebars.compile(deviceInfoTemplate);
+        const devicesHTML = deviceInfoCompiledTemplate(userData);
+        document.getElementById('userDeviceInfo').innerHTML = devicesHTML;
+    </script>
+
+    <script>
+        function deleteCihaz(deviceId) {
+            console.log('Cihaz Siliniyor', deviceId)
+            fetch(`/device/${deviceId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    // Check if the request was successful
+                    if (response.ok) {
+                        console.log('Device deleted successfully.');
+                        const user = JSON.parse(localStorage.getItem('user'))
+                        let userDevices = user.devices
+                        userDevices = userDevices.filter(device => device.id != deviceId)
+                        user.devices = userDevices
+                        localStorage.setItem('user', JSON.stringify(user))
+                        location.reload()
+                        // Perform any additional actions after successful deletion
+
+                    } else {
+                        console.error('Failed to delete device.');
+                        // Handle the error appropriately
+                    }
+                })
+                .catch(error => {
+                    console.error('Error occurred while deleting device:', error);
+                    // Handle the error appropriately
+                });
+        }
+    </script>
+    <script>
+        function logout() {
+            localStorage.clear()
+            window.location.href = "/login"
+        }
+    </script>
+</body>
+
+</html>

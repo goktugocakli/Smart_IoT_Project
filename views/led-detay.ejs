@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/led-button.css">
+    <title>Led Detay</title>
+</head>
+
+<body>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start m-3">
+        <a class="btn btn-primary" href="/cihazlarim" role="button">Cihazlarım</a>
+    </div>
+    <div id="led-detail-container">
+
+    </div>
+    <div class="toggle-button-cover">
+        <div class="button-cover">
+            <div class="button r" id="button-1">
+                <input type="checkbox" class="checkbox" id="led" />
+                <div class="knobs"></div>
+                <div class="layer"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script id="led-detail-template" type="text/x-handlebars-template">
+        <div class="card mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <img src=# alt="" class="img-fluid">
+                </div>
+                <div class="col-8">
+                    <div id="deviceCard" class="card-body">
+                        <h5 styleclass="card-title" style="display: inline-block;">Cihaz Adı: </h5>
+                        <h5 id="ad" style="display: inline-block;">{{name}}</h5><br>
+                        <p  class="card-text" style="display: inline-block;">Konu: </p>
+                        <p id="konu" style="display: inline-block;">{{broker_topic}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        // Sample data for demonstration purposes
+        const devices = JSON.parse(localStorage.getItem('user'))['devices']
+        ledData = devices.find(device => device.id == parseInt(window.location.href.split('/').slice(-1)))
+        console.log(ledData)
+
+        // Get the template source
+        const templateSource = document.getElementById('led-detail-template').innerHTML;
+
+        // Compile the Handlebars template
+        const template = Handlebars.compile(templateSource);
+
+        // Render the template with data
+        const renderedHTML = template(ledData);
+
+        const ledDetailContainer = document.getElementById('led-detail-container')
+        ledDetailContainer.innerHTML = renderedHTML;
+        // Find the location where you want to insert the rendered HTML (e.g., before the closing body tag)
+        //document.body.insertAdjacentHTML('afterbegin', renderedHTML);
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/led-button.js"></script>
+
+</body>
+
+</html>
